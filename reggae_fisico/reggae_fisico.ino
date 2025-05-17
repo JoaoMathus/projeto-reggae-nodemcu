@@ -63,13 +63,13 @@ void mostrar_temperatura_e_umidade(float temperatura, int umidade) {
 	display.println(molhado_ou_seco + ".");
 	display.display();
 }
-
-void mostrar_aviso() {
+/* Falta implementar o envio com o MQTT */
+void enviar_aviso(String motivo_do_aviso) {
 	display.clearDisplay();
 	display.setCursor(0, 10);
 	display.println("Aviso disparado!");
 	display.setCursor(0, 20);
-	display.println("[motivo]");
+	display.println(motivo_do_aviso);
 	display.display();
 }
 
@@ -104,10 +104,10 @@ void loop() {
 		mostrar_comeco_do_tempo_ao_sol(segundos_ao_sol);
 		mostrar_fim_do_tempo_ao_sol();
 		delay(2000);
+		enviar_aviso("Fim do banho de sol");
+		delay(2000);
 	}
 
 	mostrar_temperatura_e_umidade(temperatura, umidade_do_solo);
-	delay(2000);
-	mostrar_aviso();
 	delay(2000);
 }
