@@ -24,6 +24,16 @@ Adafruit_SH1106G display(LARGURA_DA_TELA, ALTURA_DA_TELA, &Wire, -1);
 bool sinal_de_acionamento_do_temporizador = true; /* valor temporário */
 int segundos_ao_sol = 3; /* valor temporário */
 
+String avisos[] = {
+	"Reservatorio vazio",
+	"Fim do banho de sol",
+	"Temperatura alta demais",
+};
+/* Índices para o vetor de avisos */
+const int aviso_reservatorio_vazio = 0;
+const int aviso_fim_de_exposicao_ao_sol = 1;
+const int aviso_temperatura_alta = 2;
+
 void setup() {
 	Serial.begin(115200);
 
@@ -63,17 +73,8 @@ void mostrar_temperatura_e_umidade(float temperatura, int umidade) {
 	display.println(molhado_ou_seco + ".");
 	display.display();
 }
-/* Falta implementar o envio com o MQTT */
-void enviar_aviso(String motivo_do_aviso) {
-	display.clearDisplay();
-	display.setCursor(0, 10);
-	display.println("Aviso disparado!");
-	display.setCursor(0, 20);
-	display.println(motivo_do_aviso);
-	display.display();
-}
 
-void mostrar_comeco_do_tempo_ao_sol(int segundos) {
+void mostrar_de_exposicao_ao_sol(int segundos) {
 	for (int i = segundos; i > 0; i--) {
 		display.clearDisplay();
 		display.setCursor(0, 10);
@@ -87,12 +88,10 @@ void mostrar_comeco_do_tempo_ao_sol(int segundos) {
 	}
 }
 
-void mostrar_fim_do_tempo_ao_sol() {
+void mostrar_aviso(String aviso) {
 	display.clearDisplay();
 	display.setCursor(0, 10);
-	display.println("Fim de exposicao");
-	display.setCursor(0, 20);
-	display.println("ao sol");
+	display.println(aviso);
 	display.display();
 }
 
@@ -101,13 +100,17 @@ void loop() {
 	float temperatura = dht.readTemperature();
 
 	if (sinal_de_acionamento_do_temporizador) {
-		mostrar_comeco_do_tempo_ao_sol(segundos_ao_sol);
-		mostrar_fim_do_tempo_ao_sol();
+		mostrar_de_exposicao_ao_sol(segundos_ao_sol);
 		delay(2000);
-		enviar_aviso("Fim do banho de sol");
+		mostrar_aviso(avisos[aviso_fim_de_exposicao_ao_sol]);
+		/* TODO: enviar aviso do fim de exposição ao sol. */
 		delay(2000);
 	}
 
 	mostrar_temperatura_e_umidade(temperatura, umidade_do_solo);
+	delay(2000);
+	mostrar_aviso(avisos[aviso_reservatorio_vazio]);
+	delay(2000);
+	mostrar_aviso(avisos[aviso_temperatura_alta]);
 	delay(2000);
 }
