@@ -1,7 +1,9 @@
 /*
  O seguintes dados virão por MQTT:
-  sinal_de_acionamento_do_temporizador; e
-	segundos_ao_sol.
+  sinal_de_acionamento_do_temporizador;
+	segundos_ao_sol;
+	temperatura_maxima_recomendada; e
+	temperatura_minima_recomendada.
 */
 
 #include <DHT.h>
@@ -23,16 +25,20 @@ Adafruit_SH1106G display(LARGURA_DA_TELA, ALTURA_DA_TELA, &Wire, -1);
 
 bool sinal_de_acionamento_do_temporizador = true; /* valor temporário */
 int segundos_ao_sol = 3; /* valor temporário */
+float temperatura_maxima_recomendada = 40.0f; /* valor temporário */
+float temperatura_minima_recomendada = 10.0f; /* valor temporário */
 
 String avisos[] = {
 	"Reservatorio vazio",
 	"Fim do banho de sol",
 	"Temperatura alta demais",
+	"Temperatura baixa demais"
 };
 /* Índices para o vetor de avisos */
 const int aviso_reservatorio_vazio = 0;
 const int aviso_fim_de_exposicao_ao_sol = 1;
 const int aviso_temperatura_alta = 2;
+const int aviso_temperatura_baixa = 3;
 
 void setup() {
 	Serial.begin(115200);
@@ -114,8 +120,19 @@ void loop() {
 
 	mostrar_temperatura_e_umidade(temperatura, umidade_do_solo);
 	delay(2000);
+
+	/* Será lançado se o solo nunca ficar úmido, mesmo quando
+	   está sendo regado. */
 	mostrar_aviso(avisos[aviso_reservatorio_vazio]);
 	delay(2000);
-	mostrar_aviso(avisos[aviso_temperatura_alta]);
-	delay(2000);
+
+	if (temperatura > temperatura_maxima_recomendada) {
+		mostrar_aviso(avisos[aviso_temperatura_alta]);
+		delay(2000);
+	}
+
+	if (temperatura < temperatura_minima_recomendada) {
+		mostrar_aviso(avisos[aviso_temperatura_baixa]);
+		delay(2000);
+	}
 }
