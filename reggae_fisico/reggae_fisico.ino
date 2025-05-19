@@ -10,7 +10,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
 
-#define LIMIAR_DA_UMIDADE_DO_SOLO 530
+/* Temporário */
+#define LIMIAR_DA_UMIDADE_DO_SOLO 500
 
 #define PINO_DO_DHT D4
 #define TIPO_DO_DHT DHT11
@@ -63,20 +64,11 @@ int segundos_para_milissegundos(int segundos) {
 }
 
 void mostrar_temperatura_e_umidade(float temperatura, int umidade) {
-	String molhado_ou_seco = "seco";
-
 	display.clearDisplay();
 	display.setCursor(0, 10);
 	display.println("Temperatura: " + String(temperatura) + " C");
 	display.setCursor(0, 20);
-	if (umidade > LIMIAR_DA_UMIDADE_DO_SOLO) {
-		molhado_ou_seco = "seco";
-	} else {
-		molhado_ou_seco = "molhado";
-	}
-	display.println("Umidade: " + String(umidade) + " %");
-	display.setCursor(0, 30);
-	display.println(molhado_ou_seco + ".");
+	display.println("Solo: " + String((3 > 2) ? "molhado" : "seco"));
 	display.display();
 }
 
