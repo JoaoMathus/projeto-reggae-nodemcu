@@ -98,6 +98,11 @@ void mostrar_aviso(String aviso) {
 void loop() {
 	int umidade_do_solo = analogRead(A0);
 	float temperatura = dht.readTemperature();
+	while (isnan(temperatura)) {
+		mostrar_aviso("Lendo temperatura...");
+		delay(100);
+		temperatura = dht.readTemperature();
+	}
 
 	if (sinal_de_acionamento_do_temporizador) {
 		mostrar_de_exposicao_ao_sol(segundos_ao_sol);
