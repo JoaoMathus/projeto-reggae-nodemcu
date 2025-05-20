@@ -14,6 +14,8 @@
 /* Temporário */
 #define LIMIAR_DA_UMIDADE_DO_SOLO 500
 
+#define BOMBA_DE_AGUA D3
+
 #define PINO_DO_DHT D4
 #define TIPO_DO_DHT DHT11
 
@@ -45,6 +47,10 @@ const int aviso_temperatura_baixa = 3;
 void setup() {
 	Serial.begin(115200);
 
+	pinMode(BOMBA_DE_AGUA, OUTPUT);
+
+	digitalWrite(BOMBA_DE_AGUA, HIGH);
+
 	dht.begin();
 
 	if (!display.begin(ENDERECO_I2C_DO_OLED)) {
@@ -69,7 +75,7 @@ void mostrar_temperatura_e_umidade(float temperatura, int umidade) {
 	display.setCursor(0, 10);
 	display.println("Temperatura: " + String(temperatura) + " C");
 	display.setCursor(0, 20);
-	display.println("Solo: " + String((3 > 2) ? "molhado" : "seco"));
+	display.println("Solo: " + String((umidade > LIMIAR_DA_UMIDADE_DO_SOLO) ? "molhado" : "seco"));
 	display.display();
 }
 
@@ -127,4 +133,15 @@ void loop() {
 		mostrar_aviso(avisos[aviso_temperatura_baixa]);
 		delay(2000);
 	}
+
+	/* A bomba d'água não está funcionand,
+	   mas por enquanto deixarei a lógica pronta. */
+	if (umidade > LIMIAR_DA_UMIDADE_DO_SOLO) {
+		mostrar_aviso("Regando...")
+		digitalWrite(BOMBA_DE_AGUA, LOW);
+		delay(1000);
+		digitalWrite(BOMBA_DE_AGUA, HIGH);
+	}
+
+	delay(2000);
 }
