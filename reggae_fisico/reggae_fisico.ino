@@ -2,8 +2,9 @@
  O seguintes dados virão por MQTT:
   sinal_de_acionamento_do_temporizador;
 	segundos_ao_sol;
-	temperatura_maxima_recomendada; e
-	temperatura_minima_recomendada.
+	temperatura_maxima_recomendada;
+	temperatura_minima_recomendada; e
+	se a planta/fruta deve ser coletada.
 */
 
 #include <DHT.h>
@@ -76,13 +77,13 @@ void mostrar_de_exposicao_ao_sol(int segundos) {
 	for (int i = segundos; i > 0; i--) {
 		display.clearDisplay();
 		display.setCursor(0, 10);
-		display.println("Comeco de exposicao");
+		display.println("Banho de sol");
 		display.setCursor(0, 20);
 		display.println("por " + String(i));
 		display.setCursor(0, 30);
 		display.println("segundos");
 		display.display();
-		delay(segundos_para_milissegundos(i));
+		delay(1000); /* 1 segundo */
 	}
 }
 
@@ -104,14 +105,13 @@ void loop() {
 
 	if (sinal_de_acionamento_do_temporizador) {
 		mostrar_de_exposicao_ao_sol(segundos_ao_sol);
-		delay(2000);
 		mostrar_aviso(avisos[aviso_fim_de_exposicao_ao_sol]);
 		/* TODO: enviar aviso do fim de exposição ao sol. */
 		delay(2000);
 	}
 
 	mostrar_temperatura_e_umidade(temperatura, umidade_do_solo);
-	delay(2000);
+	delay(2000); /* TODO: essa informação será atualizada a cada 5 minutos. */
 
 	/* Será lançado se o solo nunca ficar úmido, mesmo quando
 	   está sendo regado. */
