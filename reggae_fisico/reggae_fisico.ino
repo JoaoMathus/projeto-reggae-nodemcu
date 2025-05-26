@@ -14,8 +14,6 @@
 /* Temporário */
 #define LIMIAR_DA_UMIDADE_DO_SOLO 500
 
-#define BOMBA_DE_AGUA D3
-
 #define PINO_DO_DHT D4
 #define TIPO_DO_DHT DHT11
 
@@ -33,23 +31,17 @@ float temperatura_maxima_recomendada = 40.0f; /* valor temporário */
 float temperatura_minima_recomendada = 10.0f; /* valor temporário */
 
 String avisos[] = {
-	"Reservatorio vazio",
 	"Fim do banho de sol",
 	"Temperatura alta demais",
 	"Temperatura baixa demais"
 };
 /* Índices para o vetor de avisos */
-const int aviso_reservatorio_vazio = 0;
-const int aviso_fim_de_exposicao_ao_sol = 1;
-const int aviso_temperatura_alta = 2;
-const int aviso_temperatura_baixa = 3;
+const int aviso_fim_de_exposicao_ao_sol = 0;
+const int aviso_temperatura_alta = 1;
+const int aviso_temperatura_baixa = 2;
 
 void setup() {
 	Serial.begin(115200);
-
-	pinMode(BOMBA_DE_AGUA, OUTPUT);
-
-	digitalWrite(BOMBA_DE_AGUA, HIGH);
 
 	dht.begin();
 
@@ -119,11 +111,6 @@ void loop() {
 	mostrar_temperatura_e_umidade(temperatura, umidade_do_solo);
 	delay(2000); /* TODO: essa informação será atualizada a cada 5 minutos. */
 
-	/* Será lançado se o solo nunca ficar úmido, mesmo quando
-	   está sendo regado. */
-	mostrar_aviso(avisos[aviso_reservatorio_vazio]);
-	delay(2000);
-
 	if (temperatura > temperatura_maxima_recomendada) {
 		mostrar_aviso(avisos[aviso_temperatura_alta]);
 		delay(2000);
@@ -132,15 +119,6 @@ void loop() {
 	if (temperatura < temperatura_minima_recomendada) {
 		mostrar_aviso(avisos[aviso_temperatura_baixa]);
 		delay(2000);
-	}
-
-	/* A bomba d'água não está funcionand,
-	   mas por enquanto deixarei a lógica pronta. */
-	if (umidade > LIMIAR_DA_UMIDADE_DO_SOLO) {
-		mostrar_aviso("Regando...")
-		digitalWrite(BOMBA_DE_AGUA, LOW);
-		delay(1000);
-		digitalWrite(BOMBA_DE_AGUA, HIGH);
 	}
 
 	delay(2000);
